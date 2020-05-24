@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 guybrush.
+ * Copyright 2020 campom10.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,18 +23,5 @@
  */
 package com.mkslnd.hudson.plugins.netdomainlabeler;
 
-import hudson.model.Node;
-
-/** @author guybrush */
-class Domains {
-  //    private List<String> ldomains = new ArrayList<String>();
-
-  public Domains(Node node) {
-    setdomains(node);
-  }
-
-  public void setdomains(Node node) {
-    // Computer compu = node.toComputer();
-    System.out.println("setDomains");
-  }
-}
+/** @author campom10 */
+public class Domains {}
