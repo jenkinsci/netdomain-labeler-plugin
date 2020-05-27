@@ -34,6 +34,12 @@
         </developer>
     </developers>
 
+    <scm>
+        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+    </scm>
+
     <properties>
         <revision>6.1</revision>
         <changelist>-SNAPSHOT</changelist>
@@ -54,14 +60,6 @@
         <spotbugs.threshold>Low</spotbugs.threshold>
     </properties>
 
-    <!-- Assuming you want to host on @jenkinsci:
-    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-    <scm>
-        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-        <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-    </scm>
-    -->
     <dependencyManagement>
         <dependencies>
             <dependency>

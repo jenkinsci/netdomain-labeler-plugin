@@ -35,23 +35,20 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import jenkins.model.Jenkins;
 
 /** @author guybrush */
 /** A cache of Node labels for the LabelFinder in our package. */
 @Extension
 public class NodeLabelMgr extends ComputerListener {
-  private static transient Map<Computer, Domains> nodesDomains =
-      Collections.synchronizedMap(new WeakHashMap<>());
+  // this keeps a list of all nodes? why?
+  private static transient Set<Computer> lnodes =
+      Collections.synchronizedSet(Collections.EMPTY_SET);
   /** The labels computed for nodes - accessible package wide. */
   static transient Map<Node, Collection<LabelAtom>> nodeLabels = new WeakHashMap<>();
   /** Logging of issues. */
@@ -75,9 +72,9 @@ public class NodeLabelMgr extends ComputerListener {
   /** When any computer has changed, update the platform labels according to the configuration. */
   @Override
   public final void onConfigurationChange() {
-    synchronized (nodesDomains) {
-      nodesDomains.forEach(
-          (node, labels) -> {
+    synchronized (lnodes) {
+      lnodes.forEach(
+          (node) -> {
             try {
 
               refreshModel(node);
@@ -126,7 +123,7 @@ public class NodeLabelMgr extends ComputerListener {
    */
   public Collection<LabelAtom> getLabelsForNode(final Node node)
       throws IOException, InterruptedException {
-    dumpExistingLabels();
+    //    dumpExistingLabels();
     Set<LabelAtom> result = new HashSet<>();
     try {
       Computer computer = node.toComputer();
@@ -172,35 +169,55 @@ public class NodeLabelMgr extends ComputerListener {
     */
   }
 
-  private static void dumpExistingLabels() {
-    // static transient Map<Node, Collection<LabelAtom>> nodeLabels
-    LOGGER.log(Level.INFO, "Listando Hash:");
-    LOGGER.log(Level.INFO, String.valueOf(nodeLabels.size()));
-    for (Iterator<Node> kset = nodeLabels.keySet().iterator(); kset.hasNext(); ) {
-      Node nodito = kset.next();
-      LOGGER.log(Level.INFO, "VALUE:" + nodito.getDisplayName());
-    }
-
-    nodeLabels.forEach(
-        (node, labels) -> {
-          LOGGER.log(Level.INFO, "NODENAME: " + node.getNodeName());
-          printlabels(labels);
-        });
+  public static void removeLabelsForNode(final Node node) throws IOException, InterruptedException {
+    //    LOGGER.log(Level.INFO, "Setting Testing Labels:");
+    nodeLabels.remove(node);
+    /*    LOGGER.log(
+            Level.INFO,
+            ("SETTING NODE: " + node.getDisplayName() + " NLabels:" + String.valueOf(labels.size()))
+                .replace("\r\n", ""));
+        printlabels(labels);
+        LOGGER.log(Level.INFO, "DONE Setting Testing Labels:");
+    */
   }
 
-  public static void printlabels(Collection<LabelAtom> labels) {
-    try {
-      LOGGER.log(Level.INFO, "dump specific Labels:");
-      labels.forEach(
-          (LabelAtom tiqueta) -> {
-            LOGGER.log(Level.INFO, "Dump Label Desc: " + tiqueta.getExpression());
+  /*
+  Comented this method is there only for debugin purposes.
+  */
+  /*
+    private static void dumpExistingLabels() {
+      // static transient Map<Node, Collection<LabelAtom>> nodeLabels
+      //    LOGGER.log(Level.INFO, "Listando Hash:");
+      //    LOGGER.log(Level.INFO, String.valueOf(nodeLabels.size()));
+      for (Iterator<Node> kset = nodeLabels.keySet().iterator(); kset.hasNext(); ) {
+        Node nodito = kset.next();
+        //      LOGGER.log(Level.INFO, "VALUE:" + nodito.getDisplayName());
+      }
+
+      nodeLabels.forEach(
+          (node, labels) -> {
+            LOGGER.log(Level.INFO, "NODENAME: " + node.getNodeName());
+            printlabels(labels);
           });
-      LOGGER.log(Level.INFO, "DONE Setting Testing Labels:");
-    } catch (Exception e) {
-      LOGGER.log(Level.INFO, "Error Dumping Labels: ");
     }
-  }
-
+  */
+  /*
+  Comented this method is there only for debugin purposes.
+  */
+  /*
+    public static void printlabels(Collection<LabelAtom> labels) {
+      try {
+        //      LOGGER.log(Level.INFO, "dump specific Labels:");
+        labels.forEach(
+            (LabelAtom tiqueta) -> {
+              LOGGER.log(Level.INFO, "Dump Label Desc: " + tiqueta.getExpression());
+            });
+        //      LOGGER.log(Level.INFO, "DONE Setting Testing Labels:");
+      } catch (Exception e) {
+        //      LOGGER.log(Level.INFO, "Error Dumping Labels: ");
+      }
+    }
+  */
   /**
    * Return the Domain of a given string.
    *
@@ -229,20 +246,24 @@ public class NodeLabelMgr extends ComputerListener {
       return null;
     }
   }
+  /*
+  Not Needed any more using InetAddress. that should handle ip addesses as well
+  */
+  /*
+    public static boolean validIP(String ip) {
+      if (ip == null || ip.isEmpty()) return false;
+      ip = ip.trim();
+      if ((ip.length() < 6) & (ip.length() > 15)) return false;
 
-  public static boolean validIP(String ip) {
-    if (ip == null || ip.isEmpty()) return false;
-    ip = ip.trim();
-    if ((ip.length() < 6) & (ip.length() > 15)) return false;
-
-    try {
-      Pattern pattern =
-          Pattern.compile(
-              "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
-      Matcher matcher = pattern.matcher(ip);
-      return matcher.matches();
-    } catch (PatternSyntaxException ex) {
-      return false;
+      try {
+        Pattern pattern =
+            Pattern.compile(
+                "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+        Matcher matcher = pattern.matcher(ip);
+        return matcher.matches();
+      } catch (PatternSyntaxException ex) {
+        return false;
+      }
     }
-  }
+  */
 }

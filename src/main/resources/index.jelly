@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    assign node domain as node labels
+    Assign node domain as node labels
 </div>

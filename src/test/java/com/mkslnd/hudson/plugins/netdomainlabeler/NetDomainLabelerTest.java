@@ -57,22 +57,25 @@ public class NetDomainLabelerTest {
     } catch (InterruptedException ex) {
       Logger.getLogger(NetDomainLabelerTest.class.getName()).log(Level.SEVERE, null, ex);
     }
-    NodeLabelMgr.printlabels(expected);
-    Collection<LabelAtom> labels = new NetDomainLabeler().findLabels(j.jenkins);
-    NodeLabelMgr.printlabels(labels);
+    //    NodeLabelMgr.printlabels(expected);
+    Collection<LabelAtom> labels;
+    labels = new NetDomainLabeler().findLabels(j.jenkins);
+    //    NodeLabelMgr.printlabels(labels);
     assertThat(labels, is(expected));
   }
 
   @Test
   public void testLookupUncached() throws Exception {
     /* remove the Jenkins node from the cache */
-    /*
-        if (NodeLabelMgr.nodeLabels.containsKey(j.jenkins)) {
-          NodeLabelMgr.nodeLabels.remove(j.jenkins);
-        }
-        Collection<LabelAtom> labels = new NetDomainLabeler().findLabels(j.jenkins);
-        assertThat(labels, is(empty()));
-    */
+
+    if (NodeLabelMgr.nodeLabels.containsKey(j.jenkins)) {
+      NodeLabelMgr.removeLabelsForNode(j.jenkins);
+      //            NodeLabelMgr.nodeLabels.remove(j.jenkins);
+    }
+    Collection<LabelAtom> labels;
+    labels = new NetDomainLabeler().findLabels(j.jenkins);
+    assertThat(labels, is(empty()));
+
     assert true;
   }
 }
