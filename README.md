@@ -1,4 +1,4 @@
-# NetDomainLabeler Plugin
+# netdomain-labeler-plugin
 
 ## Scope
 This Plugin was created to automatically add the domain of a worker as a label so users can select nodes from different regions based on the domain.
